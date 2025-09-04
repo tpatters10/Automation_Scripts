@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# This script automates the process of connecting to a Hack The Box VPN.
+
+# Navigate to the Downloads directory.
+# This script assumes your configuration file is in the Downloads folder.
+cd ~/Downloads
+
+# Run openvpn with elevated privileges.
+# Replace "your_vpn_config_file.ovpn" with your actual file name.
+sudo openvpn --config "your_vpn_config_file.ovpn"
