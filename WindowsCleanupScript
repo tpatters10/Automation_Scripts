@@ -1,0 +1,72 @@
+Clear-Host
+
+$startTime = Get-Date
+$timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+$desktopPath = [Environment]::GetFolderPath("Desktop")
+$logFile = "$desktopPath\CleanupScript_Log_$timestamp.txt"
+
+Start-Transcript -Path $logFile -Append
+
+Write-Host "==========================================="
+Write-Host "            Cleanup Script"
+Write-Host "==========================================="
+Write-Host "Log File: $logFile"
+Write-Host ""
+
+Write-Host "Choose Restart Option:"
+Write-Host "1 - Restart automatically when finished"
+Write-Host "2 - I will restart manually"
+Write-Host ""
+
+$restartChoice = Read-Host "Enter 1 or 2"
+
+Write-Host "`nStarting repair sequence..."
+Write-Host "==========================================="
+
+Write-Host "`n[1/6] Running Check Disk..."
+cmd /c "chkdsk C: /f /r"
+
+Write-Host "`n[2/6] Running System File Checker..."
+sfc /scannow
+
+Write-Host "`n[3/6] Resetting Winsock..."
+netsh winsock reset
+
+Write-Host "`n[4/6] Resetting IP Stack..."
+netsh int ip reset
+
+Write-Host "`n[5/6] Flushing DNS..."
+ipconfig /flushdns
+
+Write-Host "`n[6/6] Releasing and Renewing IP..."
+ipconfig /release
+ipconfig /renew
+
+$endTime = Get-Date
+$duration = $endTime - $startTime
+
+Write-Host ""
+Write-Host "==========================================="
+Write-Host "All repair commands completed."
+Write-Host "Start Time : $startTime"
+Write-Host "End Time   : $endTime"
+Write-Host "Duration   : $($duration.ToString())"
+Write-Host "==========================================="
+
+if ($restartChoice -eq "1") {
+    Write-Host "`nSystem will restart in 15 seconds..."
+    Stop-Transcript
+    shutdown /r /t 15
+}
+elseif ($restartChoice -eq "2") {
+    Write-Host "`nACTION REQUIRED:"
+    Write-Host "Please restart your computer manually."
+    Stop-Transcript
+}
+else {
+    Write-Host "`nInvalid selection."
+    Write-Host "Please restart your computer manually."
+    Stop-Transcript
+}
+
+Write-Host "`nScript complete."
